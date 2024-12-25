@@ -1,20 +1,31 @@
 pipeline {
     agent any
+    environment {
+        IMAGE_NAME = 'websocket-chat'
+        IMAGE_TAG = 'latest'
+        DOCKER_PORT = '3000'
+    }
     stages {
         // Stage 1: Build
         stage('Build') {
             steps {
-                echo 'Building the application...'
-                sh 'docker build -t websocket-chat .'
+                echo 'Building the Docker image...'
+                script {
+                    // Docker image oluşturuluyor
+                    sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
+                }
             }
         }
 
         // Stage 2: Test
         stage('Test') {
             steps {
-                echo 'Testing the application...'
-                sh 'node app.spec.js'  
-                sh 'node app.spec.js'   
+                echo 'Running tests...'
+                script {
+                    // Testlerin çalıştırılması
+                    sh 'node app.spec.js'  
+                    sh 'node app.spec.js' // Buradaki komutlar testlerinizi çalıştıracak
+                }
             }
         }
 
@@ -22,10 +33,14 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying the application (locally)...'
-                sh 'docker run -d -p 8080:80 websocket-chat'
-                sleep(5)
-                echo 'Verifying the application is running...'
-                sh 'curl -f http://localhost:8080 || exit 1'  
+                script {
+                    // Docker container başlatılıyor
+                    sh "docker run -d -p ${DOCKER_PORT}:3000 ${IMAGE_NAME}:${IMAGE_TAG}"
+                    sleep(5)
+                    echo 'Verifying the application is running...'
+                    // Uygulamanın doğru şekilde çalışıp çalışmadığı kontrol ediliyor
+                    sh 'curl -f http://localhost:${DOCKER_PORT} || exit 1'  
+                }
             }
         }
     }
@@ -36,8 +51,11 @@ pipeline {
         }
         failure {
             echo 'Deployment failed! Rolling back...'
-            sh 'docker stop chat-app || true'
-            sh 'docker rm chat-app || true'
+            script {
+                // Hata durumunda konteyner durduruluyor ve siliniyor
+                sh 'docker stop websocket-chat || true'
+                sh 'docker rm websocket-chat || true'
+            }
         }
     }
 }
