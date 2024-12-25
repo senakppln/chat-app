@@ -5,7 +5,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the application...'
-                sh 'docker build -t chat-app .'
+                sh 'docker build -t websocket-chat .'
             }
         }
 
@@ -22,7 +22,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying the application (locally)...'
-                sh 'docker run -d -p 8080:80 chat-app'
+                sh 'docker run -d -p 8080:80 websocket-chat'
                 sleep(5)
                 echo 'Verifying the application is running...'
                 sh 'curl -f http://localhost:8080 || exit 1'  
