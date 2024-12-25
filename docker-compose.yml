@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgres:17@sha256:fe4efc6901dda0d952306fd962643d8022d7bb773ffe13fe8a21551b9276e50c
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: chatApp
+    volumes:
+      - postgresql:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+
+volumes:
+  postgresql:
