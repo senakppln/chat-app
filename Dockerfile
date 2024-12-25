@@ -1,11 +1,20 @@
-# Use an official Nginx image as the base image
-FROM nginx:latest
+# Node.js için resmi imajı temel alıyoruz
+FROM node:16
 
-# Copy the static files to the default Nginx HTML directory
-COPY . /usr/share/nginx/html
+# Çalışma dizinini oluşturuyoruz
+WORKDIR /usr/src/app
 
-# Expose port 8080
-EXPOSE 8080
+# package.json ve package-lock.json dosyalarını kopyalıyoruz
+COPY package*.json ./
 
-# Start Nginx when the container launches
-CMD ["nginx", "-g", "daemon off;"]
+# Gerekli paketleri yüklüyoruz
+RUN npm install
+
+# Uygulamanın tüm dosyalarını konteynere kopyalıyoruz
+COPY . .
+
+# 3000 portunu açıyoruz (WebSocket ve HTTP server için)
+EXPOSE 3000
+
+# Sunucu uygulamasını başlatıyoruz
+CMD ["node", "index.js"]
