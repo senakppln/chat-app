@@ -2,7 +2,6 @@ pipeline {
     agent any
     environment {
         IMAGE_NAME = 'websocket-chat'
-        IMAGE_TAG = 'latest'
         DOCKER_PORT = '3000'
     }
     stages {
@@ -12,7 +11,7 @@ pipeline {
                 echo 'Building the Docker image...'
                 script {
                     // Docker image oluşturuluyor
-                    sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
+                    sh "docker build -t ${IMAGE_NAME} ."
                 }
             }
         }
@@ -35,7 +34,7 @@ pipeline {
                 echo 'Deploying the application (locally)...'
                 script {
                     // Docker container başlatılıyor
-                    sh "docker run -d -p ${DOCKER_PORT}:3000 ${IMAGE_NAME}:${IMAGE_TAG}"
+                    sh "docker run -d -p ${DOCKER_PORT}:3000 ${IMAGE_NAME}"
                     sleep(5)
                     echo 'Verifying the application is running...'
                     // Uygulamanın doğru şekilde çalışıp çalışmadığı kontrol ediliyor
